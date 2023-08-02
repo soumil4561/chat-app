@@ -1,13 +1,19 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require('../config/db');
+const passportLocalMongoose = require('passport-local-mongoose');
+const Schema = mongoose.Schema;
+const findOrCreate = require('mongoose-findorcreate');
 const validator = require('validator');
 
-const userSchema = new mongoose.Schema({
-    name: {
+const userSchema = new Schema({
+    username:{
         type: String,
         required: true,
-        trim: true,
+        unique: true
+    },
 
+    password:{
+        type: String,
+        required: false
     },
     email: {
         type: String,
@@ -21,16 +27,19 @@ const userSchema = new mongoose.Schema({
             }
         },
     },
-    password: {
+    profilePhoto: {
         type: String,
-        required: true,
-        trim: true,
+        default:"",
+        required: false
+    },
 
-        validate(value) {
-            if (value.length < 6) {
-                throw new Error('Password must be at least 6 characters long');
-            }
-        }
+    googleID:{
+        type: String
+    },
+
+    userCreated:{
+        type: Date,
+        default: Date.now
     },
     online: {
         type: Boolean,
@@ -42,29 +51,9 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-userSchema.pre('save', async function (next) {
-    const user = this;
-    if (user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password, 8);
-    }
-    next();
-}
-);
-
-userSchema.statics.findByCredentials = async (email, password) => {
-    const user = await user.findOne({ email });    
-    if (!user) {
-        throw new Error('No user with this email');
-    }
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) {
-        throw new Error('Password is incorrect');
-    }
-    return user;
-};
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
-
-
