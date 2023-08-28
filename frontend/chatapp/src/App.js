@@ -1,10 +1,15 @@
-import Register from "./pages/register.jsx"
-import Login from "./pages/login.jsx"
-// import './App.css';
+import Register from "./pages/register.jsx";
+import Login from "./pages/login.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import Chat from "./components/Chat.jsx";
+import './App.css';
 
 function App() {
   return (
-    <Login/>
+    <div className="container">
+      <Dashboard />
+      <Chat />
+    </div>
   );
 }
 
