@@ -8,14 +8,17 @@ import {
   Typography,
   Divider,
   Avatar,
+  Badge,
 } from "@mui/material";
 import {
   ArchiveBox,
   CircleDashed,
   Divide,
   MagnifyingGlass,
+  PushPin,
 } from "phosphor-react";
 import { styled, alpha } from "@mui/material/styles";
+import { ChatList } from "../data";
 
 export default function Chat() {
   const Search = styled("div")(({ theme }) => ({
@@ -45,19 +48,70 @@ export default function Chat() {
       width: "100%",
     },
   }));
+  const StyledBadge = styled(Badge)(({ theme }) => ({
+    "& .MuiBadge-badge": {
+      backgroundColor: "#44b700",
+      color: "#44b700",
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      "&::after": {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        borderRadius: "50%",
+        animation: "ripple 1.2s infinite ease-in-out",
+        border: "1px solid currentColor",
+        content: '""',
+      },
+    },
+    "@keyframes ripple": {
+      "0%": {
+        transform: "scale(.8)",
+        opacity: 1,
+      },
+      "100%": {
+        transform: "scale(2.4)",
+        opacity: 0,
+      },
+    },
+  }));
 
-  const ChatElement = () => {
+  const ChatElement = ({id , name, image, msg, time, unread, online}) => {
     return (
       <Box
         sx={{
           width: "100%",
-          height: "50px",
           borderRadius: 2,
           backgroundColor: "#ffffff",
         }}
         p={1}
       >
-        <Avatar ></Avatar>
+        <Stack
+          direction="row"
+          alignItems={"center"}
+          justifyContent="space-between"
+        >
+          <Stack direction="row" spacing={2}>
+            {online ? <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              variant="dot"
+            >
+              <Avatar src={image}></Avatar>
+            </StyledBadge> : <Avatar></Avatar>}
+            <Stack spacing={0.3}>
+              <Typography variant="subtitle2">{name}</Typography>
+              <Typography variant="caption">{msg}</Typography>
+            </Stack>
+          </Stack>
+          <Stack spacing={2} alignItems="center">
+            <Typography sx={{ fontWeight: 600 }} variant="caption">
+              {time}
+            </Typography>
+            <Badge color="primary" badgeContent={unread}></Badge>
+          </Stack>
+        </Stack>
       </Box>
     );
   };
@@ -102,8 +156,27 @@ export default function Chat() {
             </Stack>
             <Divider />
             <Stack direction="column">
-              <ChatElement />
+              <Stack spacing={2} direction="column">
+                <Stack direction="row" spacing={1.3} alignItems="center">
+                  <PushPin></PushPin>{" "}
+                  <Typography variant="subtitle2" sx={{ color: "676767" }}>
+                    Pinned
+                  </Typography>
+                </Stack>
+
+                {ChatList.filter((el) => el.pinned).map((el) => {
+                  return <ChatElement key={el.id} {...el} />;
+                })}
+              </Stack>
             </Stack>
+            <Stack spacing={2} direction="column">
+                  <Typography variant="subtitle2" sx={{ color: "676767" }}>
+                   All Chats
+                  </Typography>
+                {ChatList.filter((el) => !el.pinned).map((el) => {
+                  return <ChatElement key={el.id} {...el} />;
+                })}
+              </Stack>     
           </Stack>
         </Stack>
       </Box>
