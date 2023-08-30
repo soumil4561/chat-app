@@ -77,7 +77,7 @@ export default function Chat() {
     },
   }));
 
-  const ChatElement = ({id , name, image, msg, time, unread, online}) => {
+  const ChatElement = ({ id, name, image, msg, time, unread, online }) => {
     return (
       <Box
         sx={{
@@ -93,13 +93,17 @@ export default function Chat() {
           justifyContent="space-between"
         >
           <Stack direction="row" spacing={2}>
-            {online ? <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
-            >
-              <Avatar src={image}></Avatar>
-            </StyledBadge> : <Avatar></Avatar>}
+            {online ? (
+              <StyledBadge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                variant="dot"
+              >
+                <Avatar src={image}></Avatar>
+              </StyledBadge>
+            ) : (
+              <Avatar></Avatar>
+            )}
             <Stack spacing={0.3}>
               <Typography variant="subtitle2">{name}</Typography>
               <Typography variant="caption">{msg}</Typography>
@@ -120,13 +124,14 @@ export default function Chat() {
       <Box
         sx={{
           position: "relative",
-          height: "100vh",
           width: 320,
+          height: "100vh",
           backgroundColor: "#F8FAFF",
           boxShadow: "0px 0px 2px rgba(0,0,0,0.25)",
+          overflow: "hidden",
         }}
       >
-        <Stack p={3} spacing={2}>
+        <Stack p={3} spacing={2} height={"100vh"}>
           <Stack
             direction="row"
             alignItems="center"
@@ -147,15 +152,15 @@ export default function Chat() {
               <StyledInputBase placeholder="Search" />
             </Search>
           </Stack>
-          <Stack spacing={1}>
-            <Stack direction="row" alignItems={"centre"} spacing={1.5}>
+          <Stack spacing={1} flexGrow={1} overflow="auto" sx={{ width: "100%" }}>
+            <Stack direction="row" alignItems={"centre"} spacing={1.5}> 
               <ArchiveBox size={24} />
               <Button>
                 <Typography variant="subtitle2">Archived</Typography>
               </Button>
             </Stack>
             <Divider />
-            <Stack direction="column">
+            <Stack direction="column" >
               <Stack spacing={2} direction="column">
                 <Stack direction="row" spacing={1.3} alignItems="center">
                   <PushPin></PushPin>{" "}
@@ -163,20 +168,19 @@ export default function Chat() {
                     Pinned
                   </Typography>
                 </Stack>
-
                 {ChatList.filter((el) => el.pinned).map((el) => {
                   return <ChatElement key={el.id} {...el} />;
                 })}
               </Stack>
             </Stack>
             <Stack spacing={2} direction="column">
-                  <Typography variant="subtitle2" sx={{ color: "676767" }}>
-                   All Chats
-                  </Typography>
-                {ChatList.filter((el) => !el.pinned).map((el) => {
-                  return <ChatElement key={el.id} {...el} />;
-                })}
-              </Stack>     
+              <Typography variant="subtitle2" sx={{ color: "676767" }}>
+                All Chats
+              </Typography>
+              {ChatList.filter((el) => !el.pinned).map((el) => {
+                return <ChatElement key={el.id} {...el} />;
+              })}
+            </Stack>
           </Stack>
         </Stack>
       </Box>
